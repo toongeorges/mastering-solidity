@@ -7,6 +7,7 @@ describe("Compiled Smart Contracts Size Test", function () {
         const SeedToken = await ethers.getContractFactory("SeedToken");
         [deployer] = await ethers.getSigners();
         const seedToken = await SeedToken.deploy(deployer.address, "Seed Token", "SEED");
+        await seedToken.waitForDeployment();
         const deployedAddress = await seedToken.getAddress();
         expect(deployedAddress).to.exist;
         const deployedCode = await seedToken.getDeployedCode();
