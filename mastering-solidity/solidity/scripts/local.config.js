@@ -16,7 +16,8 @@ module.exports = {
       mining: {
         auto: false,
         interval: [11000, 13000]
-      }
+      },
+      initialBaseFeePerGas: 0
     }
   }
 };
