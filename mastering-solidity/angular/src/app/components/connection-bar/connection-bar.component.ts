@@ -4,6 +4,7 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { ethers } from 'ethers';
+import { ProviderService } from '../../services/provider.service';
 
 @Component({
   selector: 'app-connection-bar',
@@ -18,7 +19,8 @@ import { ethers } from 'ethers';
 export class ConnectionBarComponent implements OnInit {
   constructor(
     private matIconRegistry: MatIconRegistry,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private providerService: ProviderService
   ) {
     this.matIconRegistry.addSvgIcon(
       "metamask",
@@ -37,13 +39,18 @@ export class ConnectionBarComponent implements OnInit {
   isMetaMaskConnected = false;
   isWalletConnectConnected = false;
 
-  connectMetaMask() {
+  async connectMetaMask() {
     this.disconnectWalletConnect();
-    this.isMetaMaskConnected = true;
+    const metamask = (window as any).ethereum;
+    if (metamask) {
+      await this.providerService.connect(metamask);
+      this.isMetaMaskConnected = true;
+    }
   }
 
   disconnectMetaMask() {
     this.isMetaMaskConnected = false;
+    this.providerService.disconnect();
   }
 
   connectWalletConnect() {
@@ -56,8 +63,9 @@ export class ConnectionBarComponent implements OnInit {
   }
 
   getConnectionString(): string {
-    if (this.isMetaMaskConnected || this.isWalletConnectConnected) {
-      return "connected";
+    if (this.providerService.isConnected()) {
+      return `connected to ${this.providerService.getNetwork()} `
+           + `with ${this.providerService.getAddress()}`;
     } else {
       return "not connected";
     }
