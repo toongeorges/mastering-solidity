@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
+import { ethers } from 'ethers';
 
 @Component({
   selector: 'app-connection-bar',
@@ -14,7 +15,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './connection-bar.component.html',
   styleUrl: './connection-bar.component.scss'
 })
-export class ConnectionBarComponent {
+export class ConnectionBarComponent implements OnInit {
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer
@@ -27,6 +28,10 @@ export class ConnectionBarComponent {
       "walletconnect",
       this.domSanitizer.bypassSecurityTrustResourceUrl("assets/walletconnect.svg")
     );
+  }
+
+  ngOnInit(): void {
+    console.log(`ethers version: ${ethers.version}`);
   }
 
   isMetaMaskConnected = false;
