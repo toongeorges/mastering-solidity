@@ -1,10 +1,18 @@
 import { Injectable } from '@angular/core';
 import { BrowserProvider, ethers } from 'ethers';
+import { Subject } from 'rxjs';
+
+export type NetworkChange = {
+  chainId?: string;
+  accounts?: string[];
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProviderService {
+  public changes = new Subject<NetworkChange>();
+
   private eip1193: any = null;
   private provider: ethers.BrowserProvider | null = null;
   private signer: ethers.JsonRpcSigner | null = null;
@@ -21,6 +29,7 @@ export class ProviderService {
   private chainChangedListener = async (chainId: string) => {
     console.log(`chain changed to ${chainId}`);
     await this.connect(this.eip1193);
+    this.changes.next({ chainId: chainId });
   }
 
   private accountsChangedListener = async (accounts: string[]) => {
@@ -30,6 +39,7 @@ export class ProviderService {
     } else {
       this.disconnect();
     }
+    this.changes.next({ accounts: accounts });
   }
 
   private messageListener = (message: { readonly type: string; readonly data: unknown; }) => {
