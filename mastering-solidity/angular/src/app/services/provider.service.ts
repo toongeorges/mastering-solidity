@@ -5,20 +5,57 @@ import { BrowserProvider, ethers } from 'ethers';
   providedIn: 'root'
 })
 export class ProviderService {
+  private eip1193: any = null;
   private provider: ethers.BrowserProvider | null = null;
   private signer: ethers.JsonRpcSigner | null = null;
   private network: ethers.Network | null = null;
 
+  private connectListener = (connectInfo: { readonly chainId: string; }) => {
+    console.log(`connected to ${connectInfo.chainId}`);
+  }
+
+  private disconnectListener = (error: { message: string; code: number; data?: unknown; }) => {
+    console.log(`disconnected with message '${error.message}'(${error.code})`);
+  }
+
+  private chainChangedListener = async (chainId: string) => {
+    console.log(`chain changed to ${chainId}`);
+    await this.connect(this.eip1193);
+  }
+
+  private accountsChangedListener = async (accounts: string[]) => {
+    console.log(`accounts changed to ${accounts}`);
+    if (accounts.length > 0) {
+      await this.connect(this.eip1193);
+    } else {
+      this.disconnect();
+    }
+  }
+
+  private messageListener = (message: { readonly type: string; readonly data: unknown; }) => {
+    console.log(`received message of type ${message.type}`);
+  }
+
   public async connect(eip1193: ethers.Eip1193Provider) {
     this.disconnect();
+    this.eip1193 = eip1193;
+    this.eip1193.on('connect', this.connectListener);
+    this.eip1193.on('disconnect', this.disconnectListener);
+    this.eip1193.on('chainChanged', this.chainChangedListener);
+    this.eip1193.on('accountsChanged', this.accountsChangedListener);
+    this.eip1193.on('message', this.messageListener);
     this.provider = new BrowserProvider(eip1193);
     this.signer = await this.provider.getSigner();
     this.network = await this.provider.getNetwork();
   }
 
   public disconnect() {
-    //do not call this.provider?.destroy()
-    //this will cause problems later on when reconnecting
+    this.eip1193?.removeListener('connect', this.connectListener);
+    this.eip1193?.removeListener('disconnect', this.disconnectListener);
+    this.eip1193?.removeListener('chainChanged', this.chainChangedListener);
+    this.eip1193?.removeListener('accountsChanged', this.accountsChangedListener);
+    this.eip1193?.removeListener('message', this.messageListener);
+    this.eip1193 = null;
     this.provider = null;
     this.signer = null;
     this.network = null;
