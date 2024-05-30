@@ -26,6 +26,8 @@ export class ProviderService {
 
   private disconnectListener = (error: { message: string; code: number; data?: unknown; }) => {
     console.log(`disconnected with message '${error.message}'(${error.code})`);
+    this.disconnect();
+    this.changes.next({ accounts: [] });
   }
 
   private chainChangedListener = async (chainId: string) => {

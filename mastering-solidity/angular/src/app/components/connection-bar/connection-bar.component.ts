@@ -48,6 +48,9 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
       this.changeDetectorRef.detectChanges();
     });
     await this.initMetaMask();
+    if (!this.isMetaMaskConnected) {
+      await this.initWalletConnect();
+    }
   }
 
   ngOnDestroy(): void {
@@ -64,6 +67,30 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
       if (accounts.length > 0) {
         await this.connectMetaMask();
       }
+    }
+  }
+
+  async initWalletConnect() {
+    const walletconnect = await EthereumProvider.init({
+      projectId: project_id,
+      chains: [],
+      optionalChains: [1, 5, 11155111],
+      showQrModal: true,
+      metadata: {
+        name: 'Mastering Solidity',
+        description: 'The metadata is also required now, configuration in https://cloud.walletconnect.com/',
+        url: 'https://localhost:4200',
+        icons: []
+      }
+    });
+    try {
+      const accounts: string[] = await walletconnect.request({ method: 'eth_accounts' });
+      if (accounts.length > 0) {
+        await this.providerService.connect(walletconnect, true);
+        this.isWalletConnectConnected = true;
+      }
+    } catch (error: any) {
+      console.log(`Could not connect to WalletConnect: ${error.message}`);
     }
   }
 
