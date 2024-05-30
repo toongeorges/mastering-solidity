@@ -18,6 +18,8 @@ export class ProviderService {
   private signer: ethers.JsonRpcSigner | null = null;
   private network: ethers.Network | null = null;
 
+  private isEip1193Disconnect = false;
+
   private connectListener = (connectInfo: { readonly chainId: string; }) => {
     console.log(`connected to ${connectInfo.chainId}`);
   }
@@ -46,7 +48,11 @@ export class ProviderService {
     console.log(`received message of type ${message.type}`);
   }
 
-  public async connect(eip1193: ethers.Eip1193Provider) {
+  public async connect(
+    eip1193: ethers.Eip1193Provider,
+    isEip1193Disconnect = false
+  ) {
+    this.isEip1193Disconnect = isEip1193Disconnect;
     this.disconnect();
     this.eip1193 = eip1193;
     this.eip1193.on('connect', this.connectListener);
@@ -60,6 +66,9 @@ export class ProviderService {
   }
 
   public disconnect() {
+    if (this.isEip1193Disconnect) {
+      this.eip1193?.disconnect();
+    }
     this.eip1193?.removeListener('connect', this.connectListener);
     this.eip1193?.removeListener('disconnect', this.disconnectListener);
     this.eip1193?.removeListener('chainChanged', this.chainChangedListener);

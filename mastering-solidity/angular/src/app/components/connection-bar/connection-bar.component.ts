@@ -6,6 +6,8 @@ import { CommonModule } from '@angular/common';
 import { ethers } from 'ethers';
 import { NetworkChange, ProviderService } from '../../services/provider.service';
 import { Subscription } from 'rxjs';
+import { project_id } from '../../../config/wallet-connect.json';
+import { EthereumProvider } from '@walletconnect/ethereum-provider';
 
 @Component({
   selector: 'app-connection-bar',
@@ -79,13 +81,33 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
     this.providerService.disconnect();
   }
 
-  connectWalletConnect() {
+  async connectWalletConnect() {
     this.disconnectMetaMask();
-    this.isWalletConnectConnected = true;
+    const walletconnect = await EthereumProvider.init({
+      projectId: project_id,
+      chains: [],
+      optionalChains: [1, 5, 11155111],
+      showQrModal: true,
+      metadata: {
+        name: 'Mastering Solidity',
+        description: 'The metadata is also required now, configuration in https://cloud.walletconnect.com/',
+        url: 'https://localhost:4200',
+        icons: []
+      }
+    });
+    try {
+      await walletconnect.connect();
+      await this.providerService.connect(walletconnect, true);
+      this.isWalletConnectConnected = true;
+    } catch (error: any) {
+      this.disconnectWalletConnect();
+      console.log(`Could not connect to WalletConnect: ${error.message}`);
+    }
   }
 
   disconnectWalletConnect() {
     this.isWalletConnectConnected = false;
+    this.providerService.disconnect();
   }
 
   getConnectionString(): string {
