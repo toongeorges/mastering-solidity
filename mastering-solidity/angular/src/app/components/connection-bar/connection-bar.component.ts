@@ -40,6 +40,7 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
 
   async ngOnInit(): Promise<void> {
     console.log(`ethers version: ${ethers.version}`);
+    await this.providerService.disconnect();
     this.changes = this.providerService.changes.subscribe((change: NetworkChange) => {
       if (change.accounts && (change.accounts.length == 0)) {
         this.isMetaMaskConnected = false;
@@ -99,7 +100,7 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
   }
 
   async connectMetaMask() {
-    this.disconnectWalletConnect();
+    await this.disconnectWalletConnect();
     const metamask = (window as any).ethereum;
     if (metamask && metamask.isMetaMask) {
       await this.providerService.connect(metamask);
@@ -107,13 +108,13 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
     }
   }
 
-  disconnectMetaMask() {
+  async disconnectMetaMask() {
     this.isMetaMaskConnected = false;
-    this.providerService.disconnect();
+    await this.providerService.disconnect();
   }
 
   async connectWalletConnect() {
-    this.disconnectMetaMask();
+    await this.disconnectMetaMask();
     const walletconnect = await EthereumProvider.init({
       projectId: project_id,
       chains: [],
@@ -132,14 +133,14 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
       await this.providerService.connect(walletconnect, true);
       this.isWalletConnectConnected = true;
     } catch (error: any) {
-      this.disconnectWalletConnect();
+      await this.disconnectWalletConnect();
       console.log(`Could not connect to WalletConnect: ${error.message}`);
     }
   }
 
-  disconnectWalletConnect() {
+  async disconnectWalletConnect() {
     this.isWalletConnectConnected = false;
-    this.providerService.disconnect();
+    await this.providerService.disconnect();
   }
 
   getConnectionString(): string {

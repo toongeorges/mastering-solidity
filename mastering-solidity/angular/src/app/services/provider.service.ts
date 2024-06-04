@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BrowserProvider, ethers } from 'ethers';
 import { Subject } from 'rxjs';
 import { infuraApiKey } from '../../../../solidity/infura.json';
+import { SeedTokenFactoryService } from './seed-token-factory.service';
 
 export type NetworkChange = {
   chainId?: string;
@@ -22,7 +23,9 @@ export class ProviderService {
 
   private isEip1193Disconnect = false;
 
-  constructor() {
+  constructor(
+    private seedTokenFactoryService: SeedTokenFactoryService
+  ) {
     this.defaultProvider = ethers.getDefaultProvider("sepolia", {
       "infura": infuraApiKey
     });
@@ -32,9 +35,9 @@ export class ProviderService {
     console.log(`connected to ${connectInfo.chainId}`);
   }
 
-  private disconnectListener = (error: { message: string; code: number; data?: unknown; }) => {
+  private disconnectListener = async (error: { message: string; code: number; data?: unknown; }) => {
     console.log(`disconnected with message '${error.message}'(${error.code})`);
-    this.disconnect();
+    await this.disconnect();
     this.changes.next({ accounts: [] });
   }
 
@@ -49,7 +52,7 @@ export class ProviderService {
     if (accounts.length > 0) {
       await this.connect(this.eip1193);
     } else {
-      this.disconnect();
+      await this.disconnect();
     }
     this.changes.next({ accounts: accounts });
   }
@@ -67,7 +70,7 @@ export class ProviderService {
     isEip1193Disconnect = false
   ) {
     this.isEip1193Disconnect = isEip1193Disconnect;
-    this.disconnect();
+    await this.disconnect();
     this.eip1193 = eip1193;
     this.eip1193.on('connect', this.connectListener);
     this.eip1193.on('disconnect', this.disconnectListener);
@@ -82,9 +85,10 @@ export class ProviderService {
       this.signer = await this.provider.getSigner();
     }
     this.network = await this.provider.getNetwork();
+    await this.seedTokenFactoryService.reset(this.getProvider());
   }
 
-  public disconnect() {
+  public async disconnect() {
     if (this.isEip1193Disconnect) {
       this.eip1193?.disconnect();
     }
@@ -97,6 +101,7 @@ export class ProviderService {
     this.provider = null;
     this.signer = null;
     this.network = null;
+    await this.seedTokenFactoryService.reset(this.getProvider());
   }
 
   public isConnected(): boolean {
