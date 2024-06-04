@@ -27,7 +27,16 @@ export class ProviderService {
     private seedTokenFactoryService: SeedTokenFactoryService
   ) {
     this.defaultProvider = ethers.getDefaultProvider("sepolia", {
-      "infura": infuraApiKey
+      "infura": infuraApiKey,
+      "exclusive": [
+        "alchemy",
+        "ankr",
+        "cloudflare",
+        "chainstack",
+        "infura",
+        "publicPolygon",
+        "quicknode"
+      ]
     });
   }
 

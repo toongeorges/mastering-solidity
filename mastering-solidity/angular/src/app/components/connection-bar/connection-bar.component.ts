@@ -52,9 +52,6 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
     if (!this.isMetaMaskConnected) {
       await this.initWalletConnect();
     }
-    const address = await this.providerService.getProvider()
-                              .resolveName('seed-token-factory.eth');
-    console.log(`The SeedTokenFactory smart contract address: ${address}`);
   }
 
   ngOnDestroy(): void {

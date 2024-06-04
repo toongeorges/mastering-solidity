@@ -21,12 +21,15 @@ export class SeedTokenFactoryService {
           abi,
           provider
         );
+        console.log(`SeedTokenFactory@${address}`);
       } else {
         this.seedTokenFactory = null;
+        console.log(`no SeedTokenFactory set!`);
       }
     } catch (error: any) {
       console.error(error.message);
       this.seedTokenFactory = null;
+      console.log(`no SeedTokenFactory set!`);
     }
   }
 }
