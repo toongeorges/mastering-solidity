@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -23,8 +23,7 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
-    private providerService: ProviderService,
-    private changeDetectorRef: ChangeDetectorRef
+    private providerService: ProviderService
   ) {
     this.matIconRegistry.addSvgIcon(
       "metamask",
@@ -46,7 +45,6 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
         this.isMetaMaskConnected = false;
         this.isWalletConnectConnected = false;
       }
-      this.changeDetectorRef.detectChanges();
     });
     await this.initMetaMask();
     if (!this.isMetaMaskConnected) {
