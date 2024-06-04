@@ -81,7 +81,8 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
         description: 'The metadata is also required now, configuration in https://cloud.walletconnect.com/',
         url: 'https://localhost:4200',
         icons: []
-      }
+      },
+      events: ["disconnect", "chainChanged", "accountsChanged"]
     });
     try {
       const accounts: string[] = await walletconnect.request({ method: 'eth_accounts' });
@@ -120,7 +121,8 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
         description: 'The metadata is also required now, configuration in https://cloud.walletconnect.com/',
         url: 'https://localhost:4200',
         icons: []
-      }
+      },
+      events: ["disconnect", "chainChanged", "accountsChanged"]
     });
     try {
       await walletconnect.connect();

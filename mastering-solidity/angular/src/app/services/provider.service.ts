@@ -63,7 +63,12 @@ export class ProviderService {
     this.eip1193.on('accountsChanged', this.accountsChangedListener);
     this.eip1193.on('message', this.messageListener);
     this.provider = new BrowserProvider(eip1193);
-    this.signer = await this.provider.getSigner();
+    const accounts = (eip1193 as any).accounts;
+    if (accounts) {
+      this.signer = await this.provider.getSigner(accounts[0]);
+    } else {
+      this.signer = await this.provider.getSigner();
+    }
     this.network = await this.provider.getNetwork();
   }
 
