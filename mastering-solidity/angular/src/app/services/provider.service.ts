@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BrowserProvider, ethers } from 'ethers';
 import { Subject } from 'rxjs';
+import { infuraApiKey } from '../../../../solidity/infura.json';
 
 export type NetworkChange = {
   chainId?: string;
@@ -15,10 +16,17 @@ export class ProviderService {
 
   private eip1193: any = null;
   private provider: ethers.BrowserProvider | null = null;
+  private defaultProvider: ethers.Provider;
   private signer: ethers.JsonRpcSigner | null = null;
   private network: ethers.Network | null = null;
 
   private isEip1193Disconnect = false;
+
+  constructor() {
+    this.defaultProvider = ethers.getDefaultProvider("sepolia", {
+      "infura": infuraApiKey
+    });
+  }
 
   private connectListener = (connectInfo: { readonly chainId: string; }) => {
     console.log(`connected to ${connectInfo.chainId}`);
@@ -48,6 +56,10 @@ export class ProviderService {
 
   private messageListener = (message: { readonly type: string; readonly data: unknown; }) => {
     console.log(`received message of type ${message.type}`);
+  }
+
+  public getProvider() {
+    return this.provider || this.defaultProvider;
   }
 
   public async connect(
