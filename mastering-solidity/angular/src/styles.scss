@@ -6,3 +6,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; display: fl
 mat-card { margin: 1rem; }
 button { margin: 1rem; }
 mat-form-field { margin: 1rem; }
+
+.transparent .mat-mdc-dialog-container {
+  --mdc-dialog-container-color: rgba($color: #000000, $alpha: 0.0);
+}
+
+.transparent .mat-mdc-dialog-surface {
+  box-shadow: none !important;
+}
