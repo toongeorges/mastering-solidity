@@ -3,6 +3,8 @@ import { MaterialDesignModule } from '../../modules/material-design/material-des
 import { ProviderService } from '../../services/provider.service';
 import { SeedTokenFactoryService } from '../../services/seed-token-factory.service';
 import { CommonModule } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { NewTokenDialogComponent } from './new-token-dialog/new-token-dialog.component';
 
 @Component({
   selector: 'app-new-token',
@@ -17,7 +19,8 @@ import { CommonModule } from '@angular/common';
 export class NewTokenComponent {
   constructor(
     public providerService: ProviderService,
-    public seedTokenFactoryService: SeedTokenFactoryService
+    public seedTokenFactoryService: SeedTokenFactoryService,
+    private dialog: MatDialog
   ) {   
   }
 
@@ -27,6 +30,12 @@ export class NewTokenComponent {
   }
 
   openNewTokenDialog() {
-    console.log("opening dialog");
+    this.dialog.open(NewTokenDialogComponent, {
+      data: {
+        name: '',
+        symbol: '',
+        onCreateNewToken: () => {}
+      }
+    });
   }
 }
