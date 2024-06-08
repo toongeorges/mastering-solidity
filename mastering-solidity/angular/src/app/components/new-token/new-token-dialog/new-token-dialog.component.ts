@@ -3,6 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { MaterialDesignModule } from '../../../modules/material-design/material-design.module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProgressSpinnerService } from '../../../services/progress-spinner.service';
+import { SeedTokenFactoryService } from '../../../services/seed-token-factory.service';
 
 export interface NewToken {
   name: string;
@@ -24,17 +25,16 @@ export class NewTokenDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<NewTokenDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: NewToken,
-    private progressSpinnerService: ProgressSpinnerService
+    private progressSpinnerService: ProgressSpinnerService,
+    private seedTokenFactoryService: SeedTokenFactoryService
   ) {}
 
   onCreate() {
     this.dialogRef.close();
-    const promise = new Promise((resolve, reject) => {
-      setTimeout(() => {
-        console.log("new cryptocurrency has been created");
-        resolve("Promise resolved");
-      }, 5000);
-    });
+    const promise = this.seedTokenFactoryService.get().create(
+      this.data.name,
+      this.data.symbol
+    );
     this.progressSpinnerService.showSpinnerUntilExecuted(
       promise,
       this.data.onCreateNewToken

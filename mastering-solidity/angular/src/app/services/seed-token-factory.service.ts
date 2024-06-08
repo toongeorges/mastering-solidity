@@ -6,13 +6,13 @@ import { abi } from '../../../../solidity/artifacts/contracts/SeedTokenFactory.s
   providedIn: 'root'
 })
 export class SeedTokenFactoryService {
-  private seedTokenFactory: ethers.Contract | null = null;
+  private seedTokenFactory: ethers.BaseContract | null = null;
 
-  public get() {
+  public get(): any {
     return this.seedTokenFactory;
   }
 
-  public async reset(provider: ethers.Provider) {
+  public async reset(provider: ethers.Provider, signer: ethers.Signer | null) {
     try {
       const address = await provider.resolveName('seed-token-factory.eth');
       if (address) {
@@ -21,6 +21,9 @@ export class SeedTokenFactoryService {
           abi,
           provider
         );
+        if (signer != null) {
+          this.seedTokenFactory = this.seedTokenFactory.connect(signer);
+        }
         console.log(`SeedTokenFactory@${address}`);
       } else {
         this.seedTokenFactory = null;

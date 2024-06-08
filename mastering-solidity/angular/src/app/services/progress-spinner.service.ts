@@ -17,7 +17,8 @@ export class ProgressSpinnerService {
       panelClass: 'transparent',
       disableClose: true
     });
-    promise.then(() => {
+    promise.then((response) => response.wait())
+    .then(() => {
       dialogRef.close();
       onPromiseExecuted();
     }).catch((error) => {

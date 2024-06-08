@@ -94,7 +94,7 @@ export class ProviderService {
       this.signer = await this.provider.getSigner();
     }
     this.network = await this.provider.getNetwork();
-    await this.seedTokenFactoryService.reset(this.getProvider());
+    await this.seedTokenFactoryService.reset(this.getProvider(), this.signer);
   }
 
   public async disconnect() {
@@ -110,7 +110,7 @@ export class ProviderService {
     this.provider = null;
     this.signer = null;
     this.network = null;
-    await this.seedTokenFactoryService.reset(this.getProvider());
+    await this.seedTokenFactoryService.reset(this.getProvider(), null);
   }
 
   public isConnected(): boolean {
