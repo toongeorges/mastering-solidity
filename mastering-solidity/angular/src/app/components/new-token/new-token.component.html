@@ -1,9 +1,15 @@
-<mat-card *ngIf="canCreateNewToken()">
-  <span>
-    <button
-      mat-raised-button
-      color="accent"
-      (click)="openNewTokenDialog()"
-    >New</button>
-  </span>
+<mat-card>
+  <div>
+    <span *ngIf="canCreateNewToken()">
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="openNewTokenDialog()"
+      >New</button>
+    </span>
+    <mat-form-field>
+      <mat-label>Filter</mat-label>
+      <input matInput #tokenFilter>
+    </mat-form-field>
+  </div>
 </mat-card>
