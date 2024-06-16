@@ -28,7 +28,7 @@ export class AppComponent implements OnInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     this.changes = this.providerService.changes.subscribe((change: NetworkChange) => {
       this.changeDetectorRef.detectChanges();
     });
