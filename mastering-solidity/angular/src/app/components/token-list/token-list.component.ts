@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
+import { abi } from '../../../../../solidity/artifacts/contracts/SeedToken.sol/SeedToken.json';
+import { ethers } from 'ethers';
 
 export interface Token {
   index: number;
@@ -16,6 +18,7 @@ export interface Token {
   balance: string;
   owner: string;
   isOwner: boolean;
+  contract: ethers.Contract;
 }
 
 @Component({
@@ -47,9 +50,9 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
-  async ngAfterViewInit(): Promise<void> {
+  ngAfterViewInit(): void {
     this.changes = this.seedTokenFactoryService.changes.subscribe(
-      (factory: any) => {
+      async (factory: any) => {
         const tokens = [];
         this.paginator.length = tokens.length;
 
@@ -59,6 +62,20 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
         this.tokenCount = 0;
         this.tokenIndex = 0;
+
+        if (factory) {
+          const signer = factory.runner;
+
+          this.tokenCount = await factory.getNumberOfTokens();
+          for (; this.tokenIndex < this.tokenCount; this.tokenIndex++) {
+            const address = await factory.tokens(this.tokenIndex);
+            const contract = new ethers.Contract(
+              address,
+              abi,
+              signer
+            );
+          }
+        }
 
         this.changeDetectorRef.detectChanges();
       }
