@@ -14,8 +14,8 @@ export interface Token {
   address: string;
   name: string;
   symbol: string;
-  supply: string;
-  balance: string;
+  supply: bigint;
+  balance: bigint;
   owner: string;
   isOwner: boolean;
   contract: ethers.Contract;
@@ -63,21 +63,53 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         this.tokenCount = 0;
         this.tokenIndex = 0;
 
+        this.changeDetectorRef.detectChanges();
+
         if (factory) {
           const signer = factory.runner;
+          const signerAddress = signer?.address;
 
-          this.tokenCount = await factory.getNumberOfTokens();
-          for (; this.tokenIndex < this.tokenCount; this.tokenIndex++) {
-            const address = await factory.tokens(this.tokenIndex);
+          const tokenCount = await factory.getNumberOfTokens();
+          this.tokenCount = tokenCount;
+          for (let i = 0; i < tokenCount; i++) {
+            const address = await factory.tokens(i);
             const contract = new ethers.Contract(
               address,
               abi,
               signer
             );
+
+            const decimals = await contract.decimals();
+            const divisor = 10n ** decimals;
+            const balance = signerAddress
+                          ? (await contract.balanceOf(signerAddress)) / divisor
+                          : 0n;
+            const owner = await contract.owner();
+
+            const token: Token = {
+              index: i,
+              address: address,
+              name: await contract.name(),
+              symbol: await contract.symbol(),
+              supply: (await contract.totalSupply()) / divisor,
+              balance: balance,
+              owner: owner,
+              isOwner: (signerAddress?.toLowerCase() === owner?.toLowerCase()),
+              contract: contract
+            };
+
+            tokens.push(token);
+            this.paginator.length = tokens.length;
+
+            this.tokenList = new MatTableDataSource<Token>(tokens);
+            this.tokenList.sort = this.sort;
+            this.tokenList.paginator = this.paginator;
+
+            this.tokenIndex = i;
+
+            this.changeDetectorRef.detectChanges();
           }
         }
-
-        this.changeDetectorRef.detectChanges();
       }
     );
   }
