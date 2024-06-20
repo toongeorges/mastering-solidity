@@ -18,11 +18,10 @@ import { NewTokenDialogComponent } from './new-token-dialog/new-token-dialog.com
 })
 export class NewTokenComponent {
   constructor(
-    public providerService: ProviderService,
+    private providerService: ProviderService,
     public seedTokenFactoryService: SeedTokenFactoryService,
     private dialog: MatDialog
-  ) {   
-  }
+  ) {}
 
   canCreateNewToken() {
     return this.providerService.isConnected()
@@ -37,5 +36,10 @@ export class NewTokenComponent {
         onCreateNewToken: () => {}
       }
     });
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.seedTokenFactoryService.tokenList.filter = filterValue.trim().toLowerCase();
   }
 }

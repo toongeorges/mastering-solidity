@@ -7,9 +7,9 @@
         (click)="openNewTokenDialog()"
       >New</button>
     </span>
-    <mat-form-field>
+    <mat-form-field *ngIf="seedTokenFactoryService.isShowFilter()">
       <mat-label>Filter</mat-label>
-      <input matInput #tokenFilter>
+      <input matInput (keyup)="applyFilter($event)" #tokenFilter>
     </mat-form-field>
   </div>
 </mat-card>

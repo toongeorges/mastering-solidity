@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
 import { abi } from '../../../../solidity/artifacts/contracts/SeedTokenFactory.sol/SeedTokenFactory.json';
 import { Subject } from 'rxjs';
+import { MatTableDataSource } from '@angular/material/table';
+import { Token } from '../components/token-list/token-list.component';
 
 @Injectable({
   providedIn: 'root'
@@ -10,6 +12,10 @@ export class SeedTokenFactoryService {
   private seedTokenFactory: ethers.BaseContract | null = null;
 
   public changes = new Subject<ethers.BaseContract | null>();
+
+  public tokenList = new MatTableDataSource<Token>([]);
+  public tokenCount = 0;
+  public tokenIndex = 0;
 
   public get(): any {
     return this.seedTokenFactory;
@@ -40,5 +46,9 @@ export class SeedTokenFactoryService {
       this.changes.next(null);
       console.log(`no SeedTokenFactory set!`);
     }
+  }
+
+  isShowFilter() {
+    return (this.tokenCount > 0) && (this.tokenIndex == this.tokenCount);
   }
 }

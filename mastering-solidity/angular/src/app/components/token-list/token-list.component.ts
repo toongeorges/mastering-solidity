@@ -36,17 +36,13 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     'symbol', 'supply', 'balance', 'mint', 'owner'
   ];
 
-  public tokenList = new MatTableDataSource<Token>([]);
-  public tokenCount = 0;
-  public tokenIndex = 0;
-
   @ViewChild('tokenSort') sort: MatSort;
   @ViewChild('tokenPaginator') paginator: MatPaginator;
 
   private changes: Subscription | null = null;
 
   constructor(
-    private seedTokenFactoryService: SeedTokenFactoryService,
+    public seedTokenFactoryService: SeedTokenFactoryService,
     private changeDetectorRef: ChangeDetectorRef
   ) {}
 
@@ -56,12 +52,12 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         const tokens = [];
         this.paginator.length = tokens.length;
 
-        this.tokenList = new MatTableDataSource<Token>(tokens);
-        this.tokenList.sort = this.sort;
-        this.tokenList.paginator = this.paginator;
+        this.seedTokenFactoryService.tokenList = new MatTableDataSource<Token>(tokens);
+        this.seedTokenFactoryService.tokenList.sort = this.sort;
+        this.seedTokenFactoryService.tokenList.paginator = this.paginator;
 
-        this.tokenCount = 0;
-        this.tokenIndex = 0;
+        this.seedTokenFactoryService.tokenCount = 0;
+        this.seedTokenFactoryService.tokenIndex = 0;
 
         this.changeDetectorRef.detectChanges();
 
@@ -70,8 +66,9 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
           const signerAddress = signer?.address;
 
           const tokenCount = await factory.getNumberOfTokens();
-          this.tokenCount = tokenCount;
+          this.seedTokenFactoryService.tokenCount = tokenCount;
           for (let i = 0; i < tokenCount; i++) {
+            this.seedTokenFactoryService.tokenIndex = i;
             const address = await factory.tokens(i);
             const contract = new ethers.Contract(
               address,
@@ -101,14 +98,14 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
             tokens.push(token);
             this.paginator.length = tokens.length;
 
-            this.tokenList = new MatTableDataSource<Token>(tokens);
-            this.tokenList.sort = this.sort;
-            this.tokenList.paginator = this.paginator;
-
-            this.tokenIndex = i;
+            this.seedTokenFactoryService.tokenList = new MatTableDataSource<Token>(tokens);
+            this.seedTokenFactoryService.tokenList.sort = this.sort;
+            this.seedTokenFactoryService.tokenList.paginator = this.paginator;
 
             this.changeDetectorRef.detectChanges();
           }
+          this.seedTokenFactoryService.tokenIndex = tokenCount;
+          this.changeDetectorRef.detectChanges();
         }
       }
     );

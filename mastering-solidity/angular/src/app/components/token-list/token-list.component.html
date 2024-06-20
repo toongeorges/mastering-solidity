@@ -1,5 +1,5 @@
 <mat-card>
-  <table mat-table [dataSource]="tokenList" matSort #tokenSort="matSort">
+  <table mat-table [dataSource]="seedTokenFactoryService.tokenList" matSort #tokenSort="matSort">
     <ng-container matColumnDef="symbol">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Token </th>
       <td
