@@ -8,6 +8,8 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { abi } from '../../../../../solidity/artifacts/contracts/SeedToken.sol/SeedToken.json';
 import { ethers } from 'ethers';
+import { MatDialog } from '@angular/material/dialog';
+import { MintDialogComponent } from './mint-dialog/mint-dialog.component';
 
 export interface Token {
   index: number;
@@ -43,7 +45,8 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public seedTokenFactoryService: SeedTokenFactoryService,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private dialog: MatDialog
   ) {}
 
   ngAfterViewInit(): void {
@@ -113,5 +116,18 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.changes?.unsubscribe();
+  }
+
+  openMintDialog(element: Token) {
+    this.dialog.open(MintDialogComponent, {
+      data: {
+        address: element.address,
+        name: element.name,
+        symbol: element.symbol,
+        amount: '',
+        contract: element.contract,
+        onMint: () => {}
+      }
+    });
   }
 }
