@@ -11,5 +11,10 @@
       <mat-label>Filter</mat-label>
       <input matInput (keyup)="applyFilter($event)" #tokenFilter>
     </mat-form-field>
+    <mat-progress-bar
+      *ngIf="seedTokenFactoryService.isShowProgressBar()"
+      mode="determinate"
+      [value]="seedTokenFactoryService.progression()"
+    ></mat-progress-bar>
   </div>
 </mat-card>

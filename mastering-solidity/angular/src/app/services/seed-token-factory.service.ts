@@ -51,4 +51,12 @@ export class SeedTokenFactoryService {
   isShowFilter() {
     return (this.tokenCount > 0) && (this.tokenIndex == this.tokenCount);
   }
+
+  isShowProgressBar() {
+    return (this.tokenCount > 0) && (this.tokenIndex < this.tokenCount);
+  }
+
+  progression() {
+    return Math.round(100*Number(this.tokenIndex)/Number(this.tokenCount));
+  }
 }
