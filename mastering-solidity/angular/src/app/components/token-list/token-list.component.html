@@ -48,6 +48,7 @@
         <button *ngIf="element.isOwner; else isNotOwner"
           mat-raised-button
           color="accent"
+          (click)="openChangeOwnerDialog(element)"
         >Change Owner</button>
         <ng-template #isNotOwner>
           {{ element.owner | slice:0:6 }}...{{ element.owner | slice:38 }}

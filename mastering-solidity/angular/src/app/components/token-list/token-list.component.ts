@@ -12,6 +12,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MintDialogComponent } from './mint-dialog/mint-dialog.component';
 import { ProviderService } from '../../services/provider.service';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { ChangeOwnerDialogComponent } from './change-owner-dialog/change-owner-dialog.component';
 
 export interface Token {
   index: number;
@@ -135,21 +136,40 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         amount: '',
         contract: element.contract,
         onMint: async () => {
-          const signerAddress = this.providerService.getAddress();
-          const contract = element.contract;
-          const decimals = await contract.decimals();
-          const divisor = 10n ** decimals;
-
-          const supply = (await contract.totalSupply()) / divisor;
-          const balance = (await contract.balanceOf(signerAddress)) / divisor;
-
-          const tokenList = this.seedTokenFactoryService.tokenList.data;
-          tokenList[element.index].supply = supply;
-          tokenList[element.index].balance = balance;
-
-          this.changeDetectorRef.detectChanges();
+          await this.updateToken(element);
         }
       }
     });
+  }
+
+  openChangeOwnerDialog(element: Token) {
+    this.dialog.open(ChangeOwnerDialogComponent, {
+      data: {
+        address: element.address,
+        name: element.name,
+        symbol: element.symbol,
+        newOwnerAddress: '',
+        contract: element.contract,
+        onChangeOwner: async () => {
+          await this.updateToken(element);
+        }
+      }
+    });
+  }
+
+  async updateToken(element: Token) {
+    const signerAddress = this.providerService.getAddress();
+    const contract = element.contract;
+    const decimals = await contract.decimals();
+    const divisor = 10n ** decimals;
+
+    const supply = (await contract.totalSupply()) / divisor;
+    const balance = (await contract.balanceOf(signerAddress)) / divisor;
+
+    const tokenList = this.seedTokenFactoryService.tokenList.data;
+    tokenList[element.index].supply = supply;
+    tokenList[element.index].balance = balance;
+
+    this.changeDetectorRef.detectChanges();
   }
 }
