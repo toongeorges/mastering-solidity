@@ -33,6 +33,11 @@ export class ChangeOwnerDialogComponent {
 
   onChangeOwner() {
     this.dialogRef.close();
+    const promise = this.data.contract.changeOwner(this.data.newOwnerAddress);
+    this.progressSpinnerService.showSpinnerUntilExecuted(
+      promise,
+      this.data.onChangeOwner
+    );
   }
 
   onCancel() {
