@@ -10,6 +10,7 @@ import { abi } from '../../../../../solidity/artifacts/contracts/SeedToken.sol/S
 import { ethers } from 'ethers';
 import { MatDialog } from '@angular/material/dialog';
 import { MintDialogComponent } from './mint-dialog/mint-dialog.component';
+import { ProviderService } from '../../services/provider.service';
 
 export interface Token {
   index: number;
@@ -45,6 +46,7 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
   constructor(
     public seedTokenFactoryService: SeedTokenFactoryService,
+    private providerService: ProviderService,
     private changeDetectorRef: ChangeDetectorRef,
     private dialog: MatDialog
   ) {}
@@ -126,7 +128,21 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         symbol: element.symbol,
         amount: '',
         contract: element.contract,
-        onMint: () => {}
+        onMint: async () => {
+          const signerAddress = this.providerService.getAddress();
+          const contract = element.contract;
+          const decimals = await contract.decimals();
+          const divisor = 10n ** decimals;
+
+          const supply = (await contract.totalSupply()) / divisor;
+          const balance = (await contract.balanceOf(signerAddress)) / divisor;
+
+          const tokenList = this.seedTokenFactoryService.tokenList.data;
+          tokenList[element.index].supply = supply;
+          tokenList[element.index].balance = balance;
+
+          this.changeDetectorRef.detectChanges();
+        }
       }
     });
   }
