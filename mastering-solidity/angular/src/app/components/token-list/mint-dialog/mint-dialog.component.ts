@@ -33,7 +33,11 @@ export class MintDialogComponent {
 
   onMint() {
     this.dialogRef.close();
-    console.log(`minted ${this.data.amount} tokens`);
+    const promise = this.data.contract.mint(this.data.amount);
+    this.progressSpinnerService.showSpinnerUntilExecuted(
+      promise,
+      this.data.onMint
+    );
   }
 
   onCancel() {
