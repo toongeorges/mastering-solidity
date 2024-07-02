@@ -165,10 +165,15 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
     const supply = (await contract.totalSupply()) / divisor;
     const balance = (await contract.balanceOf(signerAddress)) / divisor;
+    const owner = await contract.owner();
+    const isOwner = (signerAddress?.toLowerCase() === owner?.toLowerCase());
 
     const tokenList = this.seedTokenFactoryService.tokenList.data;
-    tokenList[element.index].supply = supply;
-    tokenList[element.index].balance = balance;
+    const token = tokenList[element.index];
+    token.supply = supply;
+    token.balance = balance;
+    token.owner = owner;
+    token.isOwner = isOwner;
 
     this.changeDetectorRef.detectChanges();
   }
