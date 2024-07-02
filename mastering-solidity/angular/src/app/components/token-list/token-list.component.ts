@@ -11,6 +11,7 @@ import { ethers } from 'ethers';
 import { MatDialog } from '@angular/material/dialog';
 import { MintDialogComponent } from './mint-dialog/mint-dialog.component';
 import { ProviderService } from '../../services/provider.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 export interface Token {
   index: number;
@@ -48,7 +49,8 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     public seedTokenFactoryService: SeedTokenFactoryService,
     private providerService: ProviderService,
     private changeDetectorRef: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private clipboard: Clipboard
   ) {}
 
   ngAfterViewInit(): void {
@@ -118,6 +120,10 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.changes?.unsubscribe();
+  }
+
+  copyToClipboard(value: string) {
+    this.clipboard.copy(value);
   }
 
   openMintDialog(element: Token) {

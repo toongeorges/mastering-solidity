@@ -5,8 +5,16 @@
       <td
         mat-cell
         *matCellDef="let element"
-        [matTooltip]="element.name + ' @ ' + element.address"
-      > {{ element.symbol }} </td>
+        [matTooltip]="element.name"
+      > {{ element.symbol }}
+        <button
+          mat-icon-button
+          [matTooltip]="element.address"
+          (click)="copyToClipboard(element.address)"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="supply">
