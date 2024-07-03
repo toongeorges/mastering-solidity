@@ -23,7 +23,7 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
   constructor(
     private matIconRegistry: MatIconRegistry,
     private domSanitizer: DomSanitizer,
-    private providerService: ProviderService
+    public providerService: ProviderService
   ) {
     this.matIconRegistry.addSvgIcon(
       "metamask",

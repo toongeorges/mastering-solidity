@@ -1,5 +1,8 @@
 <mat-toolbar>
   <span>{{ getConnectionString() }}</span>
+  <span *ngIf="providerService.blockNumber">
+    , latest block number: {{ providerService.blockNumber }}
+  </span>
   <span class="spacer"></span>
   <span *ngIf="isMetaMaskConnected; then metamaskThen else metamaskElse"></span>
   <ng-template #metamaskThen>

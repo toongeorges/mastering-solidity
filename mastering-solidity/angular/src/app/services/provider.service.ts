@@ -14,6 +14,7 @@ export type NetworkChange = {
 })
 export class ProviderService {
   public changes = new Subject<NetworkChange>();
+  public blockNumber: number;
 
   private eip1193: any = null;
   private provider: ethers.BrowserProvider | null = null;
@@ -70,6 +71,10 @@ export class ProviderService {
     console.log(`received message of type ${message.type}`);
   }
 
+  private blockListener = (blockNumber: number) => {
+    this.blockNumber = blockNumber;
+  }
+
   public getProvider() {
     return this.provider || this.defaultProvider;
   }
@@ -80,12 +85,13 @@ export class ProviderService {
   ) {
     this.isEip1193Disconnect = isEip1193Disconnect;
     await this.disconnect();
+    await this.defaultProvider.removeAllListeners();
     this.eip1193 = eip1193;
-    this.eip1193.on('connect', this.connectListener);
-    this.eip1193.on('disconnect', this.disconnectListener);
-    this.eip1193.on('chainChanged', this.chainChangedListener);
-    this.eip1193.on('accountsChanged', this.accountsChangedListener);
-    this.eip1193.on('message', this.messageListener);
+    await this.eip1193.on('connect', this.connectListener);
+    await this.eip1193.on('disconnect', this.disconnectListener);
+    await this.eip1193.on('chainChanged', this.chainChangedListener);
+    await this.eip1193.on('accountsChanged', this.accountsChangedListener);
+    await this.eip1193.on('message', this.messageListener);
     this.provider = new BrowserProvider(eip1193);
     const accounts = (eip1193 as any).accounts;
     if (accounts) {
@@ -94,22 +100,23 @@ export class ProviderService {
       this.signer = await this.provider.getSigner();
     }
     this.network = await this.provider.getNetwork();
+    await this.provider.on('block', this.blockListener);
+    this.blockNumber = null;
     await this.seedTokenFactoryService.reset(this.getProvider(), this.signer);
   }
 
   public async disconnect() {
+    await this.provider?.removeAllListeners();
     if (this.isEip1193Disconnect) {
       this.eip1193?.disconnect();
     }
-    this.eip1193?.removeListener('connect', this.connectListener);
-    this.eip1193?.removeListener('disconnect', this.disconnectListener);
-    this.eip1193?.removeListener('chainChanged', this.chainChangedListener);
-    this.eip1193?.removeListener('accountsChanged', this.accountsChangedListener);
-    this.eip1193?.removeListener('message', this.messageListener);
+    await this.eip1193?.removeAllListeners();
     this.eip1193 = null;
     this.provider = null;
     this.signer = null;
     this.network = null;
+    await this.defaultProvider.on('block', this.blockListener);
+    this.blockNumber = null;
     await this.seedTokenFactoryService.reset(this.getProvider(), null);
   }
 
