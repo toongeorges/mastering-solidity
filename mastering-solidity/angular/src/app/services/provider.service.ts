@@ -35,8 +35,7 @@ export class ProviderService {
         "cloudflare",
         "chainstack",
         "infura",
-        "publicPolygon",
-        "quicknode"
+        "publicPolygon"
       ]
     });
   }

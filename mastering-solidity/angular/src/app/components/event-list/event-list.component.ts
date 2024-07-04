@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
+import { SeedTokenFactoryService } from '../../services/seed-token-factory.service';
 
 @Component({
   selector: 'app-event-list',
@@ -19,7 +20,11 @@ export class EventListComponent {
   name: string = '';
   symbol: string = '';
 
-  searchEvents() {
+  constructor(
+    private seedTokenFactoryService: SeedTokenFactoryService
+  ) {}
+
+  async searchEvents() {
     let from = Number(this.from);
     if (isNaN(from)) {
       from = 0;
@@ -31,10 +36,19 @@ export class EventListComponent {
     const owner = this.split(this.owner);
     const name = this.split(this.name);
     const symbol = this.split(this.symbol);
-    console.log(`searching events from ${from} to ${to}`);
-    console.dir(owner);
-    console.dir(name);
-    console.dir(symbol);
+
+    const contract = this.seedTokenFactoryService.get();
+    const events = await contract.queryFilter(
+      'SeedTokenCreation',
+      from,
+      to
+    );
+
+    events.forEach((event: any) => {
+      console.log(`event with block number: ${event.blockNumber}`);
+      console.log(`topics: ${event.topics}`);
+      console.log(`data: ${event.data}`);
+    });
   }
 
   private split(values: string): string[] {
