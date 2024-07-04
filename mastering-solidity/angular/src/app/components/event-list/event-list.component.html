@@ -1,0 +1,27 @@
+<mat-card>
+  <span class="mat-headline-5 margin">Events</span>
+  <div class="margin">
+    Interval:
+    <mat-form-field>
+      <mat-label>From</mat-label>
+      <input matInput [(ngModel)]="from" (blur)="searchEvents()">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>To</mat-label>
+      <input matInput [(ngModel)]="to" (blur)="searchEvents()">
+    </mat-form-field>
+    Topics:
+    <mat-form-field>
+      <mat-label>Owner</mat-label>
+      <input matInput [(ngModel)]="owner" (blur)="searchEvents()">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="name" (blur)="searchEvents()">
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Symbol</mat-label>
+      <input matInput [(ngModel)]="symbol" (blur)="searchEvents()">
+    </mat-form-field>
+  </div>
+</mat-card>

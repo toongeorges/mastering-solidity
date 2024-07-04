@@ -6,6 +6,7 @@ import { NewTokenComponent } from './components/new-token/new-token.component';
 import { Subscription } from 'rxjs';
 import { NetworkChange, ProviderService } from './services/provider.service';
 import { TokenListComponent } from './components/token-list/token-list.component';
+import { EventListComponent } from './components/event-list/event-list.component';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,8 @@ import { TokenListComponent } from './components/token-list/token-list.component
     MaterialDesignModule,
     ConnectionBarComponent,
     NewTokenComponent,
-    TokenListComponent
+    TokenListComponent,
+    EventListComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'

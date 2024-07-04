@@ -1,4 +1,5 @@
 <mat-card>
+  <span class="mat-headline-5 margin">Tokens</span>
   <table mat-table [dataSource]="seedTokenFactoryService.tokenList" matSort #tokenSort="matSort">
     <ng-container matColumnDef="symbol">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Token </th>
