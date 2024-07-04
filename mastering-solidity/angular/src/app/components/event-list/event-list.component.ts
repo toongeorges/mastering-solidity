@@ -1,8 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
 import { SeedTokenFactoryService } from '../../services/seed-token-factory.service';
 import { ethers } from 'ethers';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 
 @Component({
   selector: 'app-event-list',
@@ -20,6 +23,15 @@ export class EventListComponent {
   owner: string = '';
   name: string = '';
   symbol: string = '';
+
+  eventColumns: string[] = [
+    'blockNumber', 'tokenAddress', 'owner'
+  ];
+
+  @ViewChild('eventSort') sort: MatSort;
+  @ViewChild('eventPaginator') paginator: MatPaginator;
+
+  eventList = new MatTableDataSource([]);
 
   constructor(
     private seedTokenFactoryService: SeedTokenFactoryService
@@ -51,15 +63,11 @@ export class EventListComponent {
       to
     );
 
-    events.forEach((event: any) => {
-      console.log(`event with block number: ${event.blockNumber}`);
-      console.log(`topics: ${event.topics}`);
-      console.log(`data: ${event.data}`);
-      console.log(`token address: ${event.args.tokenAddress}`);
-      console.log(`owner: ${event.args.owner}`);
-      console.dir(event.args.name);
-      console.dir(event.args.symbol);
-    });
+    this.paginator.length = events.length;
+
+    this.eventList = new MatTableDataSource(events);
+    this.eventList.sort = this.sort;
+    this.eventList.paginator = this.paginator;
   }
 
   private split(values: string): string[] {
