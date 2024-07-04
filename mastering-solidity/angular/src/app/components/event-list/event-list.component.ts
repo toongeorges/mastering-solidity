@@ -55,6 +55,10 @@ export class EventListComponent {
       console.log(`event with block number: ${event.blockNumber}`);
       console.log(`topics: ${event.topics}`);
       console.log(`data: ${event.data}`);
+      console.log(`token address: ${event.args.tokenAddress}`);
+      console.log(`owner: ${event.args.owner}`);
+      console.dir(event.args.name);
+      console.dir(event.args.symbol);
     });
   }
 
