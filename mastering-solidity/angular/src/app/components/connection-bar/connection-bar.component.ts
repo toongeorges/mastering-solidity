@@ -95,9 +95,9 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
   }
 
   async connectMetaMask() {
-    await this.disconnectWalletConnect();
     const metamask = (window as any).ethereum;
     if (metamask && metamask.isMetaMask) {
+      this.isWalletConnectConnected = false;
       await this.providerService.connect(metamask);
       this.isMetaMaskConnected = true;
     }
@@ -109,7 +109,7 @@ export class ConnectionBarComponent implements OnInit, OnDestroy {
   }
 
   async connectWalletConnect() {
-    await this.disconnectMetaMask();
+    this.isMetaMaskConnected = false;
     const walletconnect = await EthereumProvider.init({
       projectId: project_id,
       chains: [],
