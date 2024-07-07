@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
 import { SeedTokenFactoryService } from '../../services/seed-token-factory.service';
@@ -6,18 +6,21 @@ import { ethers } from 'ethers';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-event-list',
   standalone: true,
   imports: [
+    CommonModule,
     FormsModule,
     MaterialDesignModule
   ],
   templateUrl: './event-list.component.html',
   styleUrl: './event-list.component.scss'
 })
-export class EventListComponent {
+export class EventListComponent implements OnInit, OnDestroy {
   from: string = '';
   to: string = '';
   owner: string = '';
@@ -32,10 +35,25 @@ export class EventListComponent {
   @ViewChild('eventPaginator') paginator: MatPaginator;
 
   eventList = new MatTableDataSource([]);
+  isShowEvents = true;
+
+  private changes: Subscription | null = null;
 
   constructor(
     private seedTokenFactoryService: SeedTokenFactoryService
   ) {}
+
+  ngOnInit(): void {
+    this.changes = this.seedTokenFactoryService.changes.subscribe(
+      (factory: ethers.BaseContract | null) => {
+        this.isShowEvents = (factory != null);
+      }
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.changes?.unsubscribe();
+  }
 
   async searchEvents() {
     let from = Number(this.from);
