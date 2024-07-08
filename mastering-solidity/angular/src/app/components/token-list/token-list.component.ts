@@ -55,6 +55,33 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     private clipboard: Clipboard
   ) {}
 
+  public SeedTokenCreationListener = async (event) => {
+    const tokenAddress = event.args[0];
+    const owner = event.args[1];
+
+    const tokenList = this.seedTokenFactoryService.tokenList.data;
+
+    const signer: any = this.seedTokenFactoryService.get().runner;
+    const signerAddress = signer?.address;
+
+    const contract = new ethers.Contract(
+      tokenAddress,
+      abi,
+      signer
+    );
+
+    const token: Token = await this.getToken(
+      signerAddress,
+      tokenList.length,
+      tokenAddress,
+      owner,
+      contract
+    );
+
+    tokenList.push(token);
+    this.seedTokenFactoryService.tokenList.data = tokenList;
+  };
+
   ngAfterViewInit(): void {
     this.changes = this.seedTokenFactoryService.changes.subscribe(
       (factory: any) => {
@@ -62,6 +89,16 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         if (this.pendingFactories.length == 1) {
           this.consumeAndUpdate();
         } //else another consumeAndUpdate() call is still running
+
+        if (factory) {
+          const filter = factory.filters.SeedTokenCreation(
+            null, null, null, null
+          );
+          factory.on(
+            filter,
+            this.SeedTokenCreationListener
+          );
+        }
       }
     );
   }
@@ -108,37 +145,49 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
           signer
         );
 
-        const decimals = await contract.decimals();
-        const divisor = 10n ** decimals;
-        const balance = signerAddress
-                      ? (await contract.balanceOf(signerAddress)) / divisor
-                      : 0n;
         const owner = await contract.owner();
 
-        const token: Token = {
-          index: i,
-          address: address,
-          name: await contract.name(),
-          symbol: await contract.symbol(),
-          supply: (await contract.totalSupply()) / divisor,
-          balance: balance,
-          owner: owner,
-          isOwner: (signerAddress?.toLowerCase() === owner?.toLowerCase()),
-          contract: contract
-        };
+        const token: Token = await this.getToken(
+          signerAddress,
+          i,
+          address,
+          owner,
+          contract
+        );
 
         tokens.push(token);
-        this.paginator.length = tokens.length;
 
-        this.seedTokenFactoryService.tokenList = new MatTableDataSource<Token>(tokens);
-        this.seedTokenFactoryService.tokenList.sort = this.sort;
-        this.seedTokenFactoryService.tokenList.paginator = this.paginator;
-
-        this.changeDetectorRef.detectChanges();
+        this.seedTokenFactoryService.tokenList.data = tokens;
       }
       this.seedTokenFactoryService.tokenIndex = tokenCount;
       this.changeDetectorRef.detectChanges();
     }
+  }
+
+  private async getToken(
+    signerAddress: string,
+    index: number,
+    tokenAddress: string,
+    owner: string,
+    contract: ethers.Contract
+  ): Promise<Token> {
+    const decimals = await contract.decimals();
+    const divisor = 10n ** decimals;
+    const balance = signerAddress
+                  ? (await contract.balanceOf(signerAddress)) / divisor
+                  : 0n;
+
+    return {
+      index: index,
+      address: tokenAddress,
+      name: await contract.name(),
+      symbol: await contract.symbol(),
+      supply: (await contract.totalSupply()) / divisor,
+      balance: balance,
+      owner: owner,
+      isOwner: (signerAddress?.toLowerCase() === owner?.toLowerCase()),
+      contract: contract
+    };
   }
 
   ngOnDestroy(): void {

@@ -23,6 +23,8 @@ export class SeedTokenFactoryService {
 
   public async reset(provider: ethers.Provider, signer: ethers.Signer | null) {
     try {
+      //remove SeedTokenCreationListener set in token-list.component.ts
+      this.seedTokenFactory?.removeAllListeners();
       const address = await provider.resolveName('seed-token-factory.eth');
       if (address) {
         this.seedTokenFactory = new ethers.Contract(

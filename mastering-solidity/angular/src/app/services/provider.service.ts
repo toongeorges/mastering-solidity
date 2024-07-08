@@ -42,19 +42,19 @@ export class ProviderService {
 
   private connectListener = (connectInfo: { readonly chainId: string; }) => {
     console.log(`connected to ${connectInfo.chainId}`);
-  }
+  };
 
   private disconnectListener = async (error: { message: string; code: number; data?: unknown; }) => {
     console.log(`disconnected with message '${error.message}'(${error.code})`);
     await this.disconnect();
     this.changes.next({ accounts: [] });
-  }
+  };
 
   private chainChangedListener = async (chainId: string) => {
     console.log(`chain changed to ${chainId}`);
     await this.connect(this.eip1193);
     this.changes.next({ chainId: chainId });
-  }
+  };
 
   private accountsChangedListener = async (accounts: string[]) => {
     console.log(`accounts changed to ${accounts}`);
@@ -64,15 +64,15 @@ export class ProviderService {
       await this.disconnect();
     }
     this.changes.next({ accounts: accounts });
-  }
+  };
 
   private messageListener = (message: { readonly type: string; readonly data: unknown; }) => {
     console.log(`received message of type ${message.type}`);
-  }
+  };
 
   private blockListener = (blockNumber: number) => {
     this.blockNumber = blockNumber;
-  }
+  };
 
   public getProvider() {
     return this.provider || this.defaultProvider;
