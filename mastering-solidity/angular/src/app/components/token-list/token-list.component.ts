@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, ViewChild } from '@angular/core';
 import { MaterialDesignModule } from '../../modules/material-design/material-design.module';
 import { CommonModule } from '@angular/common';
 import { SeedTokenFactoryService } from '../../services/seed-token-factory.service';
@@ -50,7 +50,6 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
   constructor(
     public seedTokenFactoryService: SeedTokenFactoryService,
     private providerService: ProviderService,
-    private changeDetectorRef: ChangeDetectorRef,
     private dialog: MatDialog,
     private clipboard: Clipboard
   ) {}
@@ -133,7 +132,7 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     this.seedTokenFactoryService.tokenCount = 0;
     this.seedTokenFactoryService.tokenIndex = 0;
 
-    this.changeDetectorRef.detectChanges();
+    this.providerService.changes.next({});
 
     if (factory) {
       const signer = factory.runner;
@@ -165,7 +164,7 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         this.seedTokenFactoryService.tokenList.data = tokens;
       }
       this.seedTokenFactoryService.tokenIndex = tokenCount;
-      this.changeDetectorRef.detectChanges();
+      this.providerService.changes.next({});
     }
   }
 
@@ -251,6 +250,6 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
     token.owner = owner;
     token.isOwner = isOwner;
 
-    this.changeDetectorRef.detectChanges();
+    this.providerService.changes.next({});
   }
 }
