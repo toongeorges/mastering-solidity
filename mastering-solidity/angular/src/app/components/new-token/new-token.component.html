@@ -1,0 +1,20 @@
+<mat-card>
+  <div>
+    <span *ngIf="canCreateNewToken()">
+      <button
+        mat-raised-button
+        color="accent"
+        (click)="openNewTokenDialog()"
+      >New</button>
+    </span>
+    <mat-form-field *ngIf="seedTokenFactoryService.isShowFilter()">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" #tokenFilter>
+    </mat-form-field>
+    <mat-progress-bar
+      *ngIf="seedTokenFactoryService.isShowProgressBar()"
+      mode="determinate"
+      [value]="seedTokenFactoryService.progression()"
+    ></mat-progress-bar>
+  </div>
+</mat-card>

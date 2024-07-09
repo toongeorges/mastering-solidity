@@ -1,0 +1,68 @@
+<mat-card>
+  <span class="mat-headline-5 margin">Tokens</span>
+  <table mat-table [dataSource]="seedTokenFactoryService.tokenList" matSort #tokenSort="matSort">
+    <ng-container matColumnDef="symbol">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Token </th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [matTooltip]="element.name"
+      > {{ element.symbol }}
+        <button
+          mat-icon-button
+          [matTooltip]="element.address"
+          (click)="copyToClipboard(element.address)"
+        >
+          <mat-icon>content_copy</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="supply">
+      <th mat-header-cell *matHeaderCellDef> Supply </th>
+      <td mat-cell *matCellDef="let element"> {{ element.supply }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="balance">
+      <th mat-header-cell *matHeaderCellDef> Balance </th>
+      <td mat-cell *matCellDef="let element"> {{ element.balance }} </td>
+    </ng-container>
+  
+    <ng-container matColumnDef="mint">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element">
+        <button *ngIf="element.isOwner"
+          mat-raised-button
+          color="accent"
+          (click)="openMintDialog(element)"
+        >Mint</button>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="owner">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Owner </th>
+      <td
+        mat-cell
+        *matCellDef="let element"
+        [matTooltip]="element.owner"
+      >
+        <button *ngIf="element.isOwner; else isNotOwner"
+          mat-raised-button
+          color="accent"
+          (click)="openChangeOwnerDialog(element)"
+        >Change Owner</button>
+        <ng-template #isNotOwner>
+          {{ element.owner | slice:0:6 }}...{{ element.owner | slice:38 }}
+        </ng-template>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="tokenColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: tokenColumns;"></tr>
+  </table>
+  <mat-paginator #tokenPaginator
+    [pageSize]="10"
+    [pageSizeOptions]="[10, 20, 50, 100]"
+  >
+  </mat-paginator>
+</mat-card>

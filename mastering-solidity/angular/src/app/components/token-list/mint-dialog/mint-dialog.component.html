@@ -1,0 +1,35 @@
+<h1 mat-dialog-title>Minting New Cryptocurrency Tokens</h1>
+<div mat-dialog-content>
+  Mint
+  <mat-form-field>
+    <mat-label>Amount</mat-label>
+    <input matInput [(ngModel)]="data.amount">
+  </mat-form-field>
+  tokens for the cryptocurrency with
+  <mat-list>
+    <mat-list-item>
+      <div class="justify">
+        <span>Address</span>
+        <span>{{ data.address }}</span>
+      </div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item>
+      <div class="justify">
+        <span>Name</span>
+        <span>{{ data.name }}</span>
+      </div>
+    </mat-list-item>
+    <mat-divider></mat-divider>
+    <mat-list-item>
+      <div class="justify">
+        <span>Symbol</span>
+        <span>{{ data.symbol }}</span>
+      </div>
+    </mat-list-item>
+  </mat-list>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button color="accent" (click)="onMint()">Mint</button>
+  <button mat-raised-button (click)="onCancel()">Cancel</button>
+</div>
