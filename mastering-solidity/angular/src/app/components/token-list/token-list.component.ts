@@ -113,6 +113,11 @@ export class TokenListComponent implements AfterViewInit, OnDestroy {
         this.pendingFactories = this.pendingFactories.slice(length);
         //process newly added factories if any
         this.consumeAndUpdate();
+      }).catch((error) => {
+        console.error(error.message);
+        this.pendingFactories = [];
+        this.providerService.disconnect();
+        this.providerService.changes.next({ accounts: [] });
       });
     }
   }
