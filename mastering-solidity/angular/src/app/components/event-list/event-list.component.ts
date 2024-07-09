@@ -47,6 +47,9 @@ export class EventListComponent implements OnInit, OnDestroy {
     this.changes = this.seedTokenFactoryService.changes.subscribe(
       (factory: ethers.BaseContract | null) => {
         this.isShowEvents = (factory != null);
+        if (this.isShowEvents) {
+          this.searchEvents();
+        }
       }
     );
   }
