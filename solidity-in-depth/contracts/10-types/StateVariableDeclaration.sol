@@ -14,8 +14,8 @@ contract StateVariableDeclaration is Parent {
     // but accessibility by code can be restricted
     uint accessibility1;          //default accessibility = internal accessibility
     uint public accessibility2;   //accessible by all code on the blockchain
-    uint private accessibility3;  //accessible only by code in this file
-    uint internal accessibility4; //accessible only by code in this file or inheriting classes
+    uint private accessibility3;  //accessible only by code in this smart contract
+    uint internal accessibility4; //accessible only by code in this or inheriting smart contracts
 
     // mutable or immutable data
     uint variable;          //value of variable can change
